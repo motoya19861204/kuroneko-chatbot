@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- PWA用の必須タグ（iOS対応） -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="黒猫の神様">
+    
+    <title>黒猫の神様 チャット</title>
+    
+    <!-- アプリアイコン -->
+    <link rel="apple-touch-icon" href="Neko-up.jpg">
+    <link rel="icon" href="Neko-up.jpg">
+    
+    <!-- マニフェストファイル -->
+    <link rel="manifest" href="manifest.json">
+    
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            height: 100dvh; /* スマホブラウザでの最適な高さ */
+            overflow: hidden;
+            background-color: #7494C0;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Streamlitを全画面で埋め込む -->
+    <iframe src="https://kuroneko-chatbot-fsgnzw4zuprzkryxxh5baa.streamlit.app/?embed=true" allow="microphone; camera"></iframe>
+
+    <!-- Service Workerの登録 -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js');
+            });
+        }
+    </script>
+</body>
+</html>

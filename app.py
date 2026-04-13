@@ -359,16 +359,7 @@ with st.sidebar:
     おだてに弱く、からかうとムキになる。
     """)
 
-# カスタムタイトルヘッダー
-st.markdown(f"""
-<div class="chat-header">
-    <img src="data:image/jpeg;base64,{cat_header_b64}" class="chat-header-icon" alt="神様のアイコン">
-    <div class="chat-header-text">
-        <div class="chat-header-title">黒猫の神様</div>
-        <div class="chat-header-subtitle">トークルーム</div>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+
 
 # ウェルカムカード
 if len(st.session_state.messages) == 0:

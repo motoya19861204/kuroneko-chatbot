@@ -393,7 +393,7 @@ for message in st.session_state.messages:
 # =============================================
 # Gemini API呼び出し（リトライ＆フォールバック付き）
 # =============================================
-MODELS = ["gemini-3-flash-preview", "gemini-2.5-flash", "gemini-2.5-flash-lite"]
+MODELS = ["gemini-2.5-flash-lite", "gemini-2.5-flash", "gemini-3-flash-preview"]
 
 def call_gemini(contents, max_retries=3):
     for model_name in MODELS:

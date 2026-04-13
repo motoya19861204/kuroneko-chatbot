@@ -197,21 +197,24 @@ st.markdown(f"""
     /* チャット入力欄 */
     [data-testid="stChatInput"] {{
         background: #ffffff !important;
-        border: 1px solid #ddd !important;
-        border-radius: 20px !important;
+        border: 2px solid #ccc !important;
+        border-radius: 24px !important;
     }}
     [data-testid="stChatInput"] textarea {{
-        color: #1a1a1a !important;
-        font-size: 0.95rem !important;
+        color: #000000 !important;
+        background-color: transparent !important;
+        font-size: 16px !important; /* スマホでのズーム防止 */
+        font-weight: 600 !important;
         font-family: 'Noto Sans JP', sans-serif !important;
     }}
     [data-testid="stChatInput"] textarea::placeholder {{
-        color: #999 !important;
+        color: #777777 !important;
+        opacity: 1 !important;
     }}
     .stChatInputContainer {{
-        background: #F0F0F0 !important;
+        background: transparent !important;
         padding: 0.5rem 0.8rem !important;
-        border-top: 1px solid #ddd;
+        border-top: none !important;
     }}
 
     /* サイドバー */
@@ -446,6 +449,12 @@ pwa_script = f"""
     link.rel = 'manifest';
     link.href = manifestUrl;
     window.parent.document.head.appendChild(link);
+
+    // iOS用のアイコン（apple-touch-icon）を強制注入
+    const appleIcon = window.parent.document.createElement('link');
+    appleIcon.rel = 'apple-touch-icon';
+    appleIcon.href = 'data:image/jpeg;base64,{cat_header_b64}';
+    window.parent.document.head.appendChild(appleIcon);
 
     // ダミーのService Workerの登録（PWAインストール条件を満たすため）
     const swCode = `

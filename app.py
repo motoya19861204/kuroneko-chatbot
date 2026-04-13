@@ -375,11 +375,19 @@ def stream_gemini(contents, placeholder, max_retries=3):
                     ),
                 )
                 for chunk in response:
-                    if chunk.text:
-                        full_text += chunk.text
-                        placeholder.markdown(get_cat_bubble_html(full_text), unsafe_allow_html=True)
+                    try:
+                        if chunk.text:
+                            full_text += chunk.text
+                            placeholder.markdown(get_cat_bubble_html(full_text), unsafe_allow_html=True)
+                    except ValueError:
+                        # 検索結果（グラウンディングメタデータ）などテキストが無いチャンクは無視
+                        pass
                 return full_text
             except Exception as e:
+                # 既に文章を少しでも話し始めていた場合は、そこで切り上げて返す（最初からやり直させない）
+                if full_text:
+                    return full_text
+                
                 error_str = str(e)
                 is_retryable = any(code in error_str for code in ["429", "503", "RESOURCE_EXHAUSTED", "UNAVAILABLE"])
                 if is_retryable:

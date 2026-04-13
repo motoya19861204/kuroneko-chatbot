@@ -361,12 +361,11 @@ for message in st.session_state.messages:
 # =============================================
 MODELS = ["gemini-3-flash-preview", "gemini-2.5-flash", "gemini-2.5-flash-lite"]
 
-def stream_gemini(contents, placeholder, max_retries=3):
+def call_gemini(contents, max_retries=3):
     for model_name in MODELS:
         for attempt in range(max_retries):
-            full_text = ""
             try:
-                response = client.models.generate_content_stream(
+                response = client.models.generate_content(
                     model=model_name,
                     contents=contents,
                     config=genai.types.GenerateContentConfig(
@@ -374,20 +373,8 @@ def stream_gemini(contents, placeholder, max_retries=3):
                         tools=[{"google_search": {}}],
                     ),
                 )
-                for chunk in response:
-                    try:
-                        if chunk.text:
-                            full_text += chunk.text
-                            placeholder.markdown(get_cat_bubble_html(full_text), unsafe_allow_html=True)
-                    except ValueError:
-                        # 検索結果（グラウンディングメタデータ）などテキストが無いチャンクは無視
-                        pass
-                return full_text
+                return response.text
             except Exception as e:
-                # 既に文章を少しでも話し始めていた場合は、そこで切り上げて返す（最初からやり直させない）
-                if full_text:
-                    return full_text
-                
                 error_str = str(e)
                 is_retryable = any(code in error_str for code in ["429", "503", "RESOURCE_EXHAUSTED", "UNAVAILABLE"])
                 if is_retryable:
@@ -419,12 +406,12 @@ if prompt := st.chat_input("メッセージを入力"):
             parts=[genai.types.Part(text=msg["content"])]
         ))
 
-    # API呼び出し（ストリーミング通信）
-    placeholder = st.empty()
-    reply = stream_gemini(contents, placeholder)
+    # API呼び出し
+    with st.spinner("神様が考え中…"):
+        reply = call_gemini(contents)
 
     if reply:
-        placeholder.markdown(get_cat_bubble_html(reply), unsafe_allow_html=True)
+        render_cat_bubble(reply)
         st.session_state.messages.append({"role": "assistant", "content": reply})
 
 # 履歴制限

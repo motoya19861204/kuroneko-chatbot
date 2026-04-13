@@ -97,8 +97,9 @@ st.markdown(f"""
         display: none !important;
     }}
     .main .block-container {{
-        padding: 1rem 0.8rem 6rem 0.8rem;
+        padding: 0rem 0.8rem 6rem 0.8rem !important; /* 上の余白を極限まで削る */
         max-width: 600px;
+        margin-top: -1rem !important;
     }}
 
     /* カスタムヘッダー */
@@ -218,9 +219,9 @@ st.markdown(f"""
     .welcome-card {{
         background: rgba(255,255,255,0.92);
         border-radius: 16px;
-        padding: 1.5rem;
+        padding: 1.2rem;
         text-align: center;
-        margin: 1.5rem 0;
+        margin: 0rem 0 1.5rem 0; /* 上の余白を削る */
         color: #333;
         font-size: 0.95rem;
         line-height: 1.8;

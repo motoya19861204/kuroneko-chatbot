@@ -41,9 +41,22 @@ st.markdown(f"""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap');
 
+    html, body {{
+        background: #7494C0 !important;
+        border: none !important;
+    }}
     .stApp {{
-        background: #7494C0;
+        background: #7494C0 !important;
         font-family: 'Noto Sans JP', sans-serif;
+        border: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+    }}
+    /* Streamlitが埋め込み時に追加する可能性のあるラッパー枠線を強制削除 */
+    [data-testid="stAppViewContainer"], 
+    [data-testid="stHeader"] {{
+        border: none !important;
+        box-shadow: none !important;
     }}
     /* Streamlit特有のUI（ヘッダー、メニュー、フッター）を完全に隠す */
     header[data-testid="stHeader"] {{

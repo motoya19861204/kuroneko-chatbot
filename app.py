@@ -441,30 +441,65 @@ pwa_manifest = f"""{{
 
 pwa_script = f"""
 <script>
-    // Manifestの注入
+    const head = window.parent.document.head;
+    const iconUrl = 'data:image/jpeg;base64,{cat_header_b64}';
+
+    // 1. Android/PC用 Manifest
     const manifestStr = `{pwa_manifest}`;
-    const blob = new Blob([manifestStr], {{type: 'application/json'}});
-    const manifestUrl = URL.createObjectURL(blob);
-    const link = window.parent.document.createElement('link');
-    link.rel = 'manifest';
-    link.href = manifestUrl;
-    window.parent.document.head.appendChild(link);
+    const manifestBlob = new Blob([manifestStr], {{type: 'application/json'}});
+    let manifestLink = head.querySelector('link[rel="manifest"]');
+    if(!manifestLink){{
+        manifestLink = window.parent.document.createElement('link');
+        manifestLink.rel = 'manifest';
+        head.appendChild(manifestLink);
+    }}
+    manifestLink.href = URL.createObjectURL(manifestBlob);
 
-    // iOS用のアイコン（apple-touch-icon）を強制注入
-    const appleIcon = window.parent.document.createElement('link');
-    appleIcon.rel = 'apple-touch-icon';
-    appleIcon.href = 'data:image/jpeg;base64,{cat_header_b64}';
-    window.parent.document.head.appendChild(appleIcon);
+    // 2. iOS用 専用アプリ化（フルスクリーン）設定メタタグ
+    const metas = [
+        {{name: 'apple-mobile-web-app-capable', content: 'yes'}},
+        {{name: 'mobile-web-app-capable', content: 'yes'}},
+        {{name: 'apple-mobile-web-app-status-bar-style', content: 'black-translucent'}},
+        {{name: 'apple-mobile-web-app-title', content: '黒猫チャット'}}
+    ];
 
-    // ダミーのService Workerの登録（PWAインストール条件を満たすため）
-    const swCode = `
-        self.addEventListener('install', (e) => {{ self.skipWaiting(); }});
-        self.addEventListener('fetch', (e) => {{ }});
-    `;
+    metas.forEach(m => {{
+        let meta = head.querySelector(`meta[name="${{m.name}}"]`);
+        if(!meta){{
+            meta = window.parent.document.createElement('meta');
+            meta.name = m.name;
+            head.appendChild(meta);
+        }}
+        meta.content = m.content;
+    }});
+
+    // 3. iOS用 apple-touch-icon オーバーライド処理 (Streamlitの王冠アイコンを消す)
+    const updateIcons = () => {{
+        const links = head.querySelectorAll('link[rel="apple-touch-icon"], link[rel="icon"], link[rel="shortcut icon"]');
+        links.forEach(link => {{
+            link.href = iconUrl;
+        }});
+        
+        let appleIcon = head.querySelector('link[rel="apple-touch-icon"]');
+        if(!appleIcon){{
+            appleIcon = window.parent.document.createElement('link');
+            appleIcon.rel = 'apple-touch-icon';
+            appleIcon.href = iconUrl;
+            head.appendChild(appleIcon);
+        }}
+    }};
+
+    // Streamlitの上書きに負けないよう何度か実行する
+    updateIcons();
+    setTimeout(updateIcons, 1000);
+    setTimeout(updateIcons, 3000);
+    setTimeout(updateIcons, 5000);
+
+    // 4. Service Worker登録 (PWAの必須条件)
+    const swCode = `self.addEventListener('install', (e) => {{ self.skipWaiting(); }}); self.addEventListener('fetch', (e) => {{ }});`;
     const swBlob = new Blob([swCode], {{type: 'text/javascript'}});
-    const swUrl = URL.createObjectURL(swBlob);
     if ('serviceWorker' in window.parent.navigator) {{
-        window.parent.navigator.serviceWorker.register(swUrl);
+        window.parent.navigator.serviceWorker.register(URL.createObjectURL(swBlob));
     }}
 </script>
 """

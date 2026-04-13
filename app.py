@@ -63,11 +63,24 @@ st.markdown(f"""
         visibility: hidden !important;
     }}
     
-    /* iframe埋め込み時に強制出現する「Built with Streamlit」を消す */
-    [class^="viewerBadge_container"] {{
+    /* iframe埋め込み時に強制出現する「Built with Streamlit」「Fullscreen」を消滅させるアグレッシブな設定 */
+    [class^="viewerBadge"] {{
         display: none !important;
+        opacity: 0 !important;
     }}
     [class*="viewerBadge"] {{
+        display: none !important;
+        pointer-events: none !important;
+    }}
+    a[href*="streamlit.io"] {{
+        display: none !important;
+        visibility: hidden !important;
+    }}
+    a[title="Fullscreen"], a[title="全画面表示"] {{
+        display: none !important;
+    }}
+    /* Streamlitのフッターラッパーごと消去（チャット入力以外の固定要素） */
+    div.st-emotion-cache-12fmjuu {{
         display: none !important;
     }}
     .main .block-container {{

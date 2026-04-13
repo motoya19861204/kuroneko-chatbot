@@ -1,0 +1,16 @@
+{
+  "name": "黒猫チャットボット",
+  "short_name": "黒猫神",
+  "description": "はっぱ姉妹の日常の黒猫（神様）とチャットできるアプリ",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#1a1a1a",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1048/1048927.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

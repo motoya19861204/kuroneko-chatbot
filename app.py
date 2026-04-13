@@ -246,8 +246,7 @@ st.markdown(f"""
 # =============================================
 # 吹き出しHTML生成関数
 # =============================================
-def render_cat_bubble(text):
-    """猫（左寄せ・白い吹き出し）"""
+def get_cat_bubble_html(text):
     # テキスト内の改行をbrに変換、HTMLエスケープ
     escaped = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br>")
     html = f'''
@@ -256,7 +255,11 @@ def render_cat_bubble(text):
         <div class="bubble-cat">{escaped}</div>
     </div>
     '''
-    st.markdown(html, unsafe_allow_html=True)
+    return html
+
+def render_cat_bubble(text):
+    """猫（左寄せ・白い吹き出し）"""
+    st.markdown(get_cat_bubble_html(text), unsafe_allow_html=True)
 
 def render_user_bubble(text):
     """ユーザー（右寄せ・緑の吹き出し）"""
@@ -358,11 +361,12 @@ for message in st.session_state.messages:
 # =============================================
 MODELS = ["gemini-3-flash-preview", "gemini-2.5-flash", "gemini-2.5-flash-lite"]
 
-def call_gemini(contents, max_retries=3):
+def stream_gemini(contents, placeholder, max_retries=3):
     for model_name in MODELS:
         for attempt in range(max_retries):
+            full_text = ""
             try:
-                response = client.models.generate_content(
+                response = client.models.generate_content_stream(
                     model=model_name,
                     contents=contents,
                     config=genai.types.GenerateContentConfig(
@@ -370,7 +374,11 @@ def call_gemini(contents, max_retries=3):
                         tools=[{"google_search": {}}],
                     ),
                 )
-                return response.text
+                for chunk in response:
+                    if chunk.text:
+                        full_text += chunk.text
+                        placeholder.markdown(get_cat_bubble_html(full_text), unsafe_allow_html=True)
+                return full_text
             except Exception as e:
                 error_str = str(e)
                 is_retryable = any(code in error_str for code in ["429", "503", "RESOURCE_EXHAUSTED", "UNAVAILABLE"])
@@ -403,12 +411,12 @@ if prompt := st.chat_input("メッセージを入力"):
             parts=[genai.types.Part(text=msg["content"])]
         ))
 
-    # API呼び出し
-    with st.spinner("神様が考え中…"):
-        reply = call_gemini(contents)
+    # API呼び出し（ストリーミング通信）
+    placeholder = st.empty()
+    reply = stream_gemini(contents, placeholder)
 
     if reply:
-        render_cat_bubble(reply)
+        placeholder.markdown(get_cat_bubble_html(reply), unsafe_allow_html=True)
         st.session_state.messages.append({"role": "assistant", "content": reply})
 
 # 履歴制限

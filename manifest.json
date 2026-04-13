@@ -8,9 +8,9 @@
   "theme_color": "#5B7A99",
   "icons": [
     {
-      "src": "Neko-up.jpg",
+      "src": "apple-touch-icon.png",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/png"
     }
   ]
 }

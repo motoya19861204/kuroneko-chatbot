@@ -45,8 +45,21 @@ st.markdown(f"""
         background: #7494C0;
         font-family: 'Noto Sans JP', sans-serif;
     }}
+    /* Streamlit特有のUI（ヘッダー、メニュー、フッター）を完全に隠す */
     header[data-testid="stHeader"] {{
-        background: #5B7A99;
+        display: none !important;
+    }}
+    #MainMenu {{
+        visibility: hidden !important;
+    }}
+    footer {{
+        visibility: hidden !important;
+    }}
+    .stDeployButton {{
+        display: none !important;
+    }}
+    div[data-testid="stStatusWidget"] {{
+        visibility: hidden !important;
     }}
     .main .block-container {{
         padding: 1rem 0.8rem 6rem 0.8rem;

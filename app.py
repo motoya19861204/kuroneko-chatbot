@@ -54,12 +54,21 @@ st.markdown(f"""
     }}
     footer {{
         visibility: hidden !important;
+        display: none !important;
     }}
     .stDeployButton {{
         display: none !important;
     }}
     div[data-testid="stStatusWidget"] {{
         visibility: hidden !important;
+    }}
+    
+    /* iframe埋め込み時に強制出現する「Built with Streamlit」を消す */
+    [class^="viewerBadge_container"] {{
+        display: none !important;
+    }}
+    [class*="viewerBadge"] {{
+        display: none !important;
     }}
     .main .block-container {{
         padding: 1rem 0.8rem 6rem 0.8rem;
